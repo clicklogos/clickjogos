@@ -23,19 +23,19 @@ const leftPivot={x:112,y:635},rightPivot={x:308,y:635};
 function setText(){scoreEl.textContent=score.toLocaleString('pt-BR');ballsEl.textContent=String(balls)}
 function updateBest(){if(score>best){best=score;bestEl.textContent=String(best);try{localStorage.setItem('clicklogos-pinball-recorde',String(best))}catch(e){}}}
 function status(message){statusEl.textContent=message}
-function newBall(){ball={x:365,y:675,vx:0,vy:0,r:9,launched:false};ready=true;over=false;charging=false;charge=0;document.querySelector('#launch').textContent='Segure para puxar a mola';status('Segure “Puxar lançador” e solte para escolher a força.')}
+function newBall(){ball={x:365,y:675,vx:0,vy:0,r:9,launched:false,inLane:true};ready=true;over=false;charging=false;charge=0;document.querySelector('#launch').textContent='Segure para puxar a mola';status('Segure “Puxar lançador” e solte para escolher a força.')}
 function newGame(){score=0;balls=3;particles=[];targets.forEach(t=>t.hit=false);setText();newBall()}
 function startCharge(){if(over||!ready||!ball||charging)return;charging=true;chargeStart=performance.now();status('Puxe a mola… solte quando quiser lançar!')}
 function releaseLaunch(){if(!charging||over||!ready||!ball)return;charge=Math.min(1,Math.max(charge,(performance.now()-chargeStart)/1500));charging=false;ready=false;ball.launched=true;ball.vx=0;ball.vy=-(17+charge*7);document.querySelector('#launch').textContent='Mola carregada: '+Math.round(charge*100)+'%';status('Lançamento com '+Math.round(charge*100)+'% de força! Mantenha a bola em jogo.')}
 function pressFlipper(side,on){if(side==='left'){leftOn=on;leftBtn.setAttribute('aria-pressed',String(on))}else{rightOn=on;rightBtn.setAttribute('aria-pressed',String(on))}}
 function addScore(n,x,y,color){score+=n;setText();updateBest();for(let i=0;i<10;i++){const a=Math.random()*Math.PI*2,s=1+Math.random()*3;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:35,color})}}
 function segmentHit(p,a,b,active,side){const dx=b.x-a.x,dy=b.y-a.y,l2=dx*dx+dy*dy;if(!l2)return;let t=((p.x-a.x)*dx+(p.y-a.y)*dy)/l2;t=Math.max(0,Math.min(1,t));const qx=a.x+t*dx,qy=a.y+t*dy,ex=p.x-qx,ey=p.y-qy,d=Math.hypot(ex,ey),min=p.r+7;if(d>=min||d===0)return;const nx=ex/d,ny=ey/d,dot=p.vx*nx+p.vy*ny;if(dot<0){p.vx-=1.7*dot*nx;p.vy-=1.7*dot*ny}const kick=active?8:1.5;p.vx+=side*(active?2.5:.8);p.vy-=kick;p.x=qx+nx*min;p.y=qy+ny*min}
-function flipper(which){const left=which==='left',pivot=left?leftPivot:rightPivot,active=left?leftOn:rightOn;const angle=left?(active?-1.02:-.62):(active?Math.PI+1.02:Math.PI+.62);return {a:pivot,b:{x:pivot.x+Math.cos(angle)*102,y:pivot.y+Math.sin(angle)*102},active,side:left?1:-1}}
+function flipper(which){const left=which==='left',pivot=left?leftPivot:rightPivot,active=left?leftOn:rightOn;const angle=left?(active?-.45:-.9):(active?Math.PI+.45:Math.PI+.9);return {a:pivot,b:{x:pivot.x+Math.cos(angle)*102,y:pivot.y+Math.sin(angle)*102},active,side:left?1:-1}}
 function collide(){if(!ball||!ball.launched)return;const p=ball;
 if(p.x-p.r<23){p.x=23+p.r;p.vx=Math.abs(p.vx)*.82}if(p.x+p.r>397){p.x=397-p.r;p.vx=-Math.abs(p.vx)*.82}if(p.y-p.r<24){p.y=24+p.r;p.vy=Math.abs(p.vy)*.8}
 // Separate launcher chute on the right. Its upper gate feeds the ball into the playfield.
-if(p.x-p.r<346&&p.y>177){p.x=346+p.r;p.vx=Math.abs(p.vx)*.72}if(p.x+p.r>384&&p.y>92){p.x=384-p.r;p.vx=-Math.abs(p.vx)*.72}
-if(p.y<180&&p.x>335&&p.x<390&&p.vy<0){p.vx-=2.8;p.vy*=.9}
+if(p.inLane&&p.x-p.r<346&&p.y>177){p.x=346+p.r;p.vx=Math.abs(p.vx)*.72}if(p.inLane&&p.x+p.r>384&&p.y>92){p.x=384-p.r;p.vx=-Math.abs(p.vx)*.72}
+if(p.inLane&&p.y<177&&p.x>335&&p.x<390&&p.vy<0){p.vx-=2.8;p.vy*=.9}if(p.inLane&&p.y<177&&p.x<335)p.inLane=false;if(!p.inLane&&p.y>177&&p.x+p.r>346){p.x=346-p.r;p.vx=-Math.abs(p.vx)*.72}if(!p.inLane&&p.x+p.r>384&&p.y>92){p.x=384-p.r;p.vx=-Math.abs(p.vx)*.72}
 // Slanted guide rails direct the ball toward the flippers.
 segmentHit(p,{x:25,y:566},{x:93,y:634},false,1);segmentHit(p,{x:395,y:566},{x:327,y:634},false,-1);
 for(const bumper of bumpers){const dx=p.x-bumper.x,dy=p.y-bumper.y,d=Math.hypot(dx,dy),min=p.r+bumper.r;if(d<min&&d>0){const nx=dx/d,ny=dy/d,dot=p.vx*nx+p.vy*ny;if(dot<0){p.vx-=2.05*dot*nx;p.vy-=2.05*dot*ny}p.vx+=nx*3.5;p.vy+=ny*3.5;p.x=bumper.x+nx*(min+1);p.y=bumper.y+ny*(min+1);addScore(bumper.points,bumper.x,bumper.y,bumper.color);flash=9}}
