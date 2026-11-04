@@ -15,6 +15,7 @@ input{width:100%;background:#0b1020;color:var(--text);border:1px solid #3b496b;b
 .score{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.score-card{text-align:center;border:1px solid var(--line);background:#10182c;border-radius:13px;padding:12px 4px}.score-card span{display:block;color:var(--muted);font-size:.77rem}.score-card b{display:block;font-size:1.7rem;margin-top:3px}.actions{display:flex;gap:10px;margin-top:13px}.foot{text-align:center;color:var(--muted);font-size:.78rem;line-height:1.5}
 @media(max-width:560px){.lobby-grid{grid-template-columns:1fr}.lobby p{min-height:0}.arena{gap:6px}.fighter{padding:12px 3px}.roomline{align-items:flex-start}}
 </style>
+<script src="../assets/name-filter.js"></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZJRR2GXXET"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-ZJRR2GXXET');</script></head>
 <body>
@@ -53,6 +54,9 @@ const $=id=>document.getElementById(id);
 let peer=null, conn=null, isHost=false, room="", myName="", theirName="Adversário", myMove=null, theirMove=null, round=0, score={me:0,draw:0,them:0}, connected=false, roundReady=false;
 function status(msg,kind=""){const el=$("connectionStatus");el.textContent=msg;el.className="status "+kind}
 function gameStatus(msg,kind=""){const el=$("gameStatus");el.textContent=msg;el.className="status "+kind}
+function checkedName(id,fallback){const field=$(id),result=window.ClicklogosNameFilter.validate(field.value);if(!result.ok){status("Esse nome não pode ser usado. Escolha outro.","bad");field.focus();return null}return result.value||fallback}
+function checkedRemoteName(value,fallback){const result=window.ClicklogosNameFilter.validate(value);return result.ok?(result.value||fallback):null}
+function rejectName(){status("O nome do adversário não foi aceito. A conexão será encerrada.","bad");gameStatus("Nome não permitido. A conexão será encerrada.","bad");const active=conn;send({type:"name-rejected"});setTimeout(()=>active&&active.close(),150)}
 function randomCode(){return Math.random().toString(36).slice(2,8).padEnd(6,"X").toUpperCase()}
 function showGame(){ $("lobbyPanel").classList.add("hidden"); $("gamePanel").classList.remove("hidden"); $("roomCode").textContent=room; $("myName").textContent=myName; $("theirName").textContent=theirName; }
 function setChoices(enabled){document.querySelectorAll("[data-move]").forEach(b=>{b.disabled=!enabled;b.classList.toggle("selected",b.dataset.move===myMove)});$("rematchBtn").disabled=!(connected&&roundReady)}
@@ -71,14 +75,16 @@ function attachConnection(c){
 function send(data){if(conn&&conn.open)conn.send(data)}
 function handleData(data){
  if(!data||typeof data!=="object")return;
- if(data.type==="hello"){theirName=String(data.name||"Adversário").slice(0,18);$("theirName").textContent=theirName;gameStatus("Conectado com "+theirName+". Faça sua jogada.","good");return}
+ if(data.type==="name-rejected"){status("Seu nome não foi aceito. Saia da sala e tente outro.","bad");gameStatus("Seu nome não foi aceito. Saia da sala e tente outro.","bad");return}
+ if(data.type==="hello"){const safe=checkedRemoteName(data.name,"Adversário");if(safe===null){rejectName();return}theirName=safe;$("theirName").textContent=theirName;gameStatus("Conectado com "+theirName+". Faça sua jogada.","good");return}
  if(data.type==="move"&&data.round===round){theirMove=data.move;if(myMove)reveal();else gameStatus(theirName+" já jogou. Agora é sua vez.");}
  if(data.type==="next"){if(data.round===round+1){round=data.round;resetRound();gameStatus("Nova rodada. Escolha sua jogada.","good");}}
  if(data.type==="reset"){round=0;score={me:0,draw:0,them:0};updateScore();resetRound();gameStatus("Placar zerado. Nova partida!","good")}
 }
+function escapeHtml(value){return String(value).replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","\'":"&#39;"})[char])}
 function play(move){
  if(!connected||myMove||roundReady)return;
- myMove=move;$("myMove").textContent=icons[move];setChoices(false);$("result").className="result";$("result").innerHTML="<strong>Jogada confirmada</strong><p>Aguardando "+theirName+"...</p>";send({type:"move",move,round});if(theirMove)reveal();else gameStatus("Jogada enviada. Aguardando o adversário.");
+ myMove=move;$("myMove").textContent=icons[move];setChoices(false);$("result").className="result";$("result").innerHTML="<strong>Jogada confirmada</strong><p>Aguardando "+escapeHtml(theirName)+"...</p>";send({type:"move",move,round});if(theirMove)reveal();else gameStatus("Jogada enviada. Aguardando o adversário.");
 }
 function reveal(){
  if(!myMove||!theirMove||roundReady)return;
@@ -86,13 +92,13 @@ function reveal(){
  const r=$("result");r.className="result";
  if(myMove===theirMove){score.draw++;r.classList.add("draw");r.innerHTML="<strong>Empate!</strong><p>Os dois escolheram "+labels[myMove]+".</p>";}
  else if(beats[myMove]===theirMove){score.me++;r.classList.add("win");r.innerHTML="<strong>Você venceu!</strong><p>"+labels[myMove]+" vence "+labels[theirMove].toLowerCase()+".</p>";}
- else{score.them++;r.classList.add("lose");r.innerHTML="<strong>"+theirName+" venceu!</strong><p>"+labels[theirMove]+" vence "+labels[myMove].toLowerCase()+".</p>";}
+ else{score.them++;r.classList.add("lose");r.innerHTML="<strong>"+escapeHtml(theirName)+" venceu!</strong><p>"+labels[theirMove]+" vence "+labels[myMove].toLowerCase()+".</p>";}
  updateScore();gameStatus("Rodada concluída. Clique em Próxima rodada para continuar.","good");$("rematchBtn").disabled=false;
 }
 document.querySelectorAll("[data-move]").forEach(b=>b.addEventListener("click",()=>play(b.dataset.move)));
 $("createBtn").addEventListener("click",()=>{
  if(!window.Peer){status("Não foi possível carregar a conexão online. Confira a internet e recarregue a página.","bad");return}
- myName=($("hostName").value.trim()||"Anfitrião").slice(0,18);isHost=true;room=randomCode();showGame();gameStatus("Criando sala. Aguarde...");$("roomCode").textContent=room;
+ myName=checkedName("hostName","Anfitrião");if(myName===null)return;isHost=true;room=randomCode();showGame();gameStatus("Criando sala. Aguarde...");$("roomCode").textContent=room;
  peer=new Peer("ppt-"+room.toLowerCase(),{debug:2});setupPeerEvents();
  peer.on("open",()=>{gameStatus("Sala criada. Envie o código "+room+" para seu amigo.");status("Sala criada. Compartilhe o código "+room+".");});
  peer.on("connection",c=>{if(conn){c.close();return}attachConnection(c)});
@@ -101,7 +107,7 @@ $("joinBtn").addEventListener("click",()=>{
  if(!window.Peer){status("Não foi possível carregar a conexão online. Confira a internet e recarregue a página.","bad");return}
  room=$("joinCode").value.trim().toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);
  if(room.length!==6){status("Digite o código de 6 caracteres.","bad");return}
- myName=($("joinName").value.trim()||"Convidado").slice(0,18);isHost=false;showGame();gameStatus("Conectando à sala "+room+"...");peer=new Peer(undefined,{debug:2});setupPeerEvents();
+ myName=checkedName("joinName","Convidado");if(myName===null)return;isHost=false;showGame();gameStatus("Conectando à sala "+room+"...");peer=new Peer(undefined,{debug:2});setupPeerEvents();
  peer.on("open",()=>{attachConnection(peer.connect("ppt-"+room.toLowerCase(),{reliable:true}))});
 });
 $("copyBtn").addEventListener("click",async()=>{
