@@ -1,132 +1,65 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pedra, Papel e Tesoura — Multiplayer</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101820">
+<meta name="description" content="Clicklogos — Projetos Digitais. Escolha um jogo e divirta-se.">
+<title>Clicklogos — Jogos</title>
 <style>
-:root{color-scheme:dark;--bg:#0b1020;--panel:#141c32;--line:#2b3857;--muted:#9eacc8;--text:#f4f7ff;--accent:#9aa8ff;--win:#5de0a1;--lose:#ff7d91;--draw:#ffd479}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:var(--text);background:radial-gradient(ellipse at top,#202b52 0,#0b1020 60%);display:grid;place-items:center;padding:20px}
-main{width:min(780px,100%)}header{text-align:center;margin:8px 0 22px}.eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:.72rem;color:var(--accent);font-weight:800}h1{font-size:clamp(2rem,6vw,3.3rem);line-height:1.05;margin:10px 0}header p{color:var(--muted);margin:0}
-.panel{background:rgba(20,28,50,.96);border:1px solid var(--line);border-radius:24px;padding:clamp(17px,4vw,28px);box-shadow:0 24px 80px #0005;margin-bottom:14px}
-h2{font-size:1.03rem;margin:0 0 14px}.muted{color:var(--muted)}.lobby-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.lobby{background:#10182c;border:1px solid var(--line);border-radius:16px;padding:16px}.lobby h3{margin:0 0 8px;font-size:1rem}.lobby p{font-size:.86rem;color:var(--muted);min-height:40px;margin:0 0 12px}
-input{width:100%;background:#0b1020;color:var(--text);border:1px solid #3b496b;border-radius:10px;padding:12px;font:inherit;text-transform:uppercase;margin:0 0 9px}.btn{background:var(--accent);color:#0b1020;border:0;border-radius:11px;padding:12px 15px;font-weight:800;cursor:pointer;width:100%}.btn.secondary{background:#273452;color:var(--text);border:1px solid #3a496b}.btn:disabled{opacity:.4;cursor:not-allowed}.status{border:1px solid var(--line);background:#0e162a;padding:13px 15px;border-radius:13px;margin:14px 0;color:var(--muted);font-size:.9rem}.status.good{color:var(--win)}.status.bad{color:var(--lose)}
-.hidden{display:none!important}.roomline{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.roomcode{font-size:1.5rem;letter-spacing:.15em;font-weight:900;color:var(--accent)}.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.choice{background:#1b2643;color:var(--text);border:1px solid #354466;border-radius:16px;padding:14px 6px;cursor:pointer}.choice:hover:not(:disabled){border-color:var(--accent);transform:translateY(-2px)}.choice:disabled{opacity:.4;cursor:not-allowed}.choice.selected{border:2px solid var(--win);background:#173b39}.symbol{display:block;font-size:clamp(2rem,7vw,3rem);margin-bottom:6px}.choice strong{font-size:.94rem}
-.arena{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin:18px 0}.fighter{text-align:center;padding:14px 5px;background:#0e162a;border:1px solid var(--line);border-radius:15px}.fighter .label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}.move{font-size:2.8rem;margin:5px}.name{font-weight:750}.versus{font-weight:900;color:var(--muted);font-size:.8rem}.result{text-align:center;border:1px solid var(--line);background:#0e162a;border-radius:13px;padding:14px;margin:12px 0;min-height:60px}.result strong{display:block;font-size:1.1rem}.result p{margin:5px 0 0;color:var(--muted);font-size:.87rem}.result.win strong{color:var(--win)}.result.lose strong{color:var(--lose)}.result.draw strong{color:var(--draw)}
-.score{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.score-card{text-align:center;border:1px solid var(--line);background:#10182c;border-radius:13px;padding:12px 4px}.score-card span{display:block;color:var(--muted);font-size:.77rem}.score-card b{display:block;font-size:1.7rem;margin-top:3px}.actions{display:flex;gap:10px;margin-top:13px}.foot{text-align:center;color:var(--muted);font-size:.78rem;line-height:1.5}
-@media(max-width:560px){.lobby-grid{grid-template-columns:1fr}.lobby p{min-height:0}.arena{gap:6px}.fighter{padding:12px 3px}.roomline{align-items:flex-start}}
+:root{--bg:#101820;--panel:#1b2933;--line:#3c505d;--mint:#45dfc1;--blue:#159dff;--light:#e9d8b7;--dark:#47615e}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#203b45,#101820 65%);color:#f5f7f8;font:16px system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+a{color:inherit;text-decoration:none}.wrap{max-width:1000px;margin:auto;padding:16px 14px 28px}
+header{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:28px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}.logo{width:54px;height:54px;object-fit:contain;border-radius:12px}
+.brand h1{font-size:clamp(22px,5vw,29px);margin:0}.brand p{margin:2px 0;color:#b9c6cc;font-size:13px}
+.header-tag{border:1px solid var(--line);border-radius:999px;padding:8px 12px;color:#b9c6cc;font-size:12px;white-space:nowrap}
+.hero{background:linear-gradient(135deg,rgba(69,223,193,.1),rgba(27,41,51,.88));border:1px solid var(--line);border-radius:18px;padding:clamp(22px,5vw,38px);margin-bottom:18px;box-shadow:0 12px 30px #0002}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;color:var(--mint);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;font-weight:750}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--mint);box-shadow:0 0 12px var(--mint)}
+.hero h2{font-size:clamp(30px,6vw,49px);line-height:1.08;letter-spacing:-1.2px;margin:14px 0 12px;max-width:700px}
+.hero h2 span{color:var(--mint)}.hero p{margin:0;color:#b9c6cc;max-width:650px;line-height:1.65}
+.section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:24px 2px 12px}.section-head h2{font-size:20px;margin:0}.section-head p{font-size:12px;color:#b9c6cc;margin:0}
+.games{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:17px;display:flex;flex-direction:column;min-height:230px;box-shadow:0 12px 30px #0002;transition:border-color .18s,transform .18s}
+.card:hover{border-color:var(--mint);transform:translateY(-2px)}
+.game-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:var(--mint);color:#10232b;font-size:24px;font-weight:900;margin-bottom:15px}
+.card h3{font-size:19px;margin:0 0 7px}.card p{font-size:14px;color:#b9c6cc;line-height:1.55;margin:0 0 18px}
+.card-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto}.tag{font-size:12px;color:#b9c6cc}
+.button{display:inline-flex;justify-content:center;align-items:center;background:var(--mint);color:#10232b;border-radius:9px;padding:11px 14px;min-height:42px;font-size:14px;font-weight:800}
+.button.secondary{background:#2b3b46;color:white;border:1px solid #50616b}.button:hover{filter:brightness(1.06)}
+footer{text-align:center;color:#82949e;font-size:12px;margin-top:24px;padding-top:16px;border-top:1px solid rgba(60,80,93,.7)}
+@media(max-width:650px){.wrap{padding:12px 9px 22px}header{align-items:flex-start}.header-tag{font-size:10px;padding:7px 9px;white-space:normal;text-align:center}.games{grid-template-columns:1fr}.hero{padding:23px 18px}.card{min-height:210px}}
 </style>
- <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <!-- estilos e configurações existentes -->
-
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZJRR2GXXET"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-ZJRR2GXXET');
-  </script>
-</head>
-<body>
-<main>
-<header><div class="eyebrow">Multiplayer online</div><h1>Pedra, Papel<br>e Tesoura</h1><p>Crie uma sala, compartilhe o código e desafie alguém.</p></header>
-<section class="panel" id="lobbyPanel">
-<h2>Jogue com outra pessoa</h2>
-<div class="lobby-grid">
-<div class="lobby"><h3>Criar uma sala</h3><p>Você será o anfitrião. Envie o código para seu amigo entrar.</p><input id="hostName" maxlength="18" placeholder="Seu nome (ex.: Paulo)" value="Jogador 1"><button class="btn" id="createBtn">Criar sala</button></div>
-<div class="lobby"><h3>Entrar em uma sala</h3><p>Digite o código recebido da pessoa que criou a sala.</p><input id="joinName" maxlength="18" placeholder="Seu nome"><input id="joinCode" maxlength="6" placeholder="CÓDIGO DA SALA"><button class="btn" id="joinBtn">Entrar na sala</button></div>
-</div>
-<div id="connectionStatus" class="status" role="status">Para jogar com alguém, os dois precisam abrir este site com acesso à internet.</div>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZJRR2GXXET"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-ZJRR2GXXET');</script></head>
+<body><main class="wrap">
+<header>
+<a class="brand" href="index.html">
+<img class="logo" src="assets/logo-clicklogos.png" alt="Logo Clicklogos">
+<div><h1>Clicklogos</h1><p>Projetos Digitais</p></div>
+</a>
+<div class="header-tag">Portal de jogos</div>
+</header>
+<section class="hero">
+<div class="eyebrow"><span class="dot"></span> Bem-vindo ao Clicklogos</div>
+<h2>Escolha seu jogo.<br><span>Comece a jogar.</span></h2>
+<p>Um espaço para jogos de navegador, desafios e diversão. Selecione um jogo abaixo. Novos títulos poderão ser adicionados aqui conforme forem prontos e testados.</p>
 </section>
-<section class="panel hidden" id="gamePanel">
-<div class="roomline"><div><div class="muted" style="font-size:.78rem">CÓDIGO DA SALA</div><div class="roomcode" id="roomCode">------</div></div><button class="btn secondary" style="width:auto" id="copyBtn">Copiar convite</button></div>
-<div class="status" id="gameStatus" role="status">Aguardando conexão...</div>
-<h2>Sua jogada</h2>
-<div class="choices">
-<button class="choice" data-move="pedra" disabled><span class="symbol">✊</span><strong>Pedra</strong></button>
-<button class="choice" data-move="papel" disabled><span class="symbol">✋</span><strong>Papel</strong></button>
-<button class="choice" data-move="tesoura" disabled><span class="symbol">✌️</span><strong>Tesoura</strong></button>
+<section>
+<div class="section-head"><h2>Jogos disponíveis</h2><p>Escolha um card para abrir</p></div>
+<div class="games">
+<article class="card">
+<div class="game-icon">✂</div><h3>Pedra, Papel e Tesoura</h3>
+<p>O clássico desafio entre jogadores. Entre em uma partida e veja quem vence cada rodada.</p>
+<div class="card-bottom"><span class="tag">Multiplayer</span><a class="button" href="jogos/pedra-papel-tesoura.html">Jogar agora</a></div>
+</article>
+<article class="card">
+<div class="game-icon">♟</div><h3>Damas Clicklogos</h3>
+<p>Jogo de damas brasileiras em tabuleiro 8×8. Crie uma sala online e compartilhe o código com outra pessoa.</p>
+<div class="card-bottom"><span class="tag">Multiplayer online</span><a class="button" href="jogos/damas.html">Jogar agora</a></div>
+</article>
 </div>
-<div class="arena" aria-live="polite"><div class="fighter"><div class="label">Você</div><div class="move" id="myMove">?</div><div class="name" id="myName">Você</div></div><div class="versus">VS</div><div class="fighter"><div class="label">Adversário</div><div class="move" id="theirMove">?</div><div class="name" id="theirName">Aguardando</div></div></div>
-<div class="result" id="result" role="status"><strong>Pronto para jogar</strong><p>As escolhas só aparecem depois que os dois jogarem.</p></div>
-<div class="score"><div class="score-card"><span>Suas vitórias</span><b id="myScore">0</b></div><div class="score-card"><span>Empates</span><b id="drawScore">0</b></div><div class="score-card"><span>Vitórias adversárias</span><b id="theirScore">0</b></div></div>
-<div class="actions"><button class="btn secondary" id="rematchBtn" disabled>Próxima rodada</button><button class="btn secondary" id="leaveBtn">Sair da sala</button></div>
 </section>
-<p class="foot">O jogo usa conexão pela internet e um serviço público de sinalização PeerJS. Não informe dados pessoais sensíveis.</p>
-</main>
-<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<script>
-(() => {
-const icons={pedra:"✊",papel:"✋",tesoura:"✌️"}, labels={pedra:"Pedra",papel:"Papel",tesoura:"Tesoura"}, beats={pedra:"tesoura",papel:"pedra",tesoura:"papel"};
-const $=id=>document.getElementById(id);
-let peer=null, conn=null, isHost=false, room="", myName="", theirName="Adversário", myMove=null, theirMove=null, round=0, score={me:0,draw:0,them:0}, connected=false, roundReady=false;
-function status(msg,kind=""){const el=$("connectionStatus");el.textContent=msg;el.className="status "+kind}
-function gameStatus(msg,kind=""){const el=$("gameStatus");el.textContent=msg;el.className="status "+kind}
-function randomCode(){return Math.random().toString(36).slice(2,8).padEnd(6,"X").toUpperCase()}
-function showGame(){ $("lobbyPanel").classList.add("hidden"); $("gamePanel").classList.remove("hidden"); $("roomCode").textContent=room; $("myName").textContent=myName; $("theirName").textContent=theirName; }
-function setChoices(enabled){document.querySelectorAll("[data-move]").forEach(b=>{b.disabled=!enabled;b.classList.toggle("selected",b.dataset.move===myMove)});$("rematchBtn").disabled=!(connected&&roundReady)}
-function updateScore(){ $("myScore").textContent=score.me;$("drawScore").textContent=score.draw;$("theirScore").textContent=score.them }
-function resetRound(){myMove=null;theirMove=null;roundReady=false;$("myMove").textContent="?";$("theirMove").textContent="?";$("result").className="result";$("result").innerHTML="<strong>Escolha sua jogada</strong><p>O resultado aparece quando os dois confirmarem.</p>";setChoices(connected)}
-function setupPeerEvents(){
- peer.on("error",err=>{const msg=err.type==="unavailable-id"?"Este código de sala já está em uso. Saia e crie outra sala.":err.type==="peer-unavailable"?"Sala não encontrada ou anfitrião desconectado. Crie uma nova sala e tente novamente.":err.type==="network"||err.type==="socket-error"||err.type==="server-error"||err.type==="socket-closed"?"Falha ao acessar o servidor de conexão PeerJS ("+err.type+"). Recarregue a página e tente novamente; se persistir, a rede/serviço pode estar bloqueando a conexão.":"Não foi possível conectar: "+err.type+". Verifique sua internet e tente novamente.";status(msg,"bad");gameStatus(msg,"bad")});
- peer.on("disconnected",()=>{if(peer&&!peer.destroyed)peer.reconnect()});
-}
-function attachConnection(c){
- conn=c;
- conn.on("open",()=>{connected=true;setChoices(true);gameStatus("Conectado com "+theirName+". Faça sua jogada.","good");status("Conexão estabelecida.","good");send({type:"hello",name:myName,room});});
- conn.on("data",handleData);
- conn.on("close",()=>{connected=false;setChoices(false);gameStatus("A conexão caiu. Peça ao adversário para reconectar.");});
-}
-function send(data){if(conn&&conn.open)conn.send(data)}
-function handleData(data){
- if(!data||typeof data!=="object")return;
- if(data.type==="hello"){theirName=String(data.name||"Adversário").slice(0,18);$("theirName").textContent=theirName;gameStatus("Conectado com "+theirName+". Faça sua jogada.","good");return}
- if(data.type==="move"&&data.round===round){theirMove=data.move;if(myMove)reveal();else gameStatus(theirName+" já jogou. Agora é sua vez.");}
- if(data.type==="next"){if(data.round===round+1){round=data.round;resetRound();gameStatus("Nova rodada. Escolha sua jogada.","good");}}
- if(data.type==="reset"){round=0;score={me:0,draw:0,them:0};updateScore();resetRound();gameStatus("Placar zerado. Nova partida!","good")}
-}
-function play(move){
- if(!connected||myMove||roundReady)return;
- myMove=move;$("myMove").textContent=icons[move];setChoices(false);$("result").className="result";$("result").innerHTML="<strong>Jogada confirmada</strong><p>Aguardando "+theirName+"...</p>";send({type:"move",move,round});if(theirMove)reveal();else gameStatus("Jogada enviada. Aguardando o adversário.");
-}
-function reveal(){
- if(!myMove||!theirMove||roundReady)return;
- roundReady=true;setChoices(false);$("theirMove").textContent=icons[theirMove];$("myMove").textContent=icons[myMove];
- const r=$("result");r.className="result";
- if(myMove===theirMove){score.draw++;r.classList.add("draw");r.innerHTML="<strong>Empate!</strong><p>Os dois escolheram "+labels[myMove]+".</p>";}
- else if(beats[myMove]===theirMove){score.me++;r.classList.add("win");r.innerHTML="<strong>Você venceu!</strong><p>"+labels[myMove]+" vence "+labels[theirMove].toLowerCase()+".</p>";}
- else{score.them++;r.classList.add("lose");r.innerHTML="<strong>"+theirName+" venceu!</strong><p>"+labels[theirMove]+" vence "+labels[myMove].toLowerCase()+".</p>";}
- updateScore();gameStatus("Rodada concluída. Clique em Próxima rodada para continuar.","good");$("rematchBtn").disabled=false;
-}
-document.querySelectorAll("[data-move]").forEach(b=>b.addEventListener("click",()=>play(b.dataset.move)));
-$("createBtn").addEventListener("click",()=>{
- if(!window.Peer){status("Não foi possível carregar a conexão online. Confira a internet e recarregue a página.","bad");return}
- myName=($("hostName").value.trim()||"Anfitrião").slice(0,18);isHost=true;room=randomCode();showGame();gameStatus("Criando sala. Aguarde...");$("roomCode").textContent=room;
- peer=new Peer("ppt-"+room.toLowerCase(),{debug:2});setupPeerEvents();
- peer.on("open",()=>{gameStatus("Sala criada. Envie o código "+room+" para seu amigo.");status("Sala criada. Compartilhe o código "+room+".");});
- peer.on("connection",c=>{if(conn){c.close();return}attachConnection(c)});
-});
-$("joinBtn").addEventListener("click",()=>{
- if(!window.Peer){status("Não foi possível carregar a conexão online. Confira a internet e recarregue a página.","bad");return}
- room=$("joinCode").value.trim().toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);
- if(room.length!==6){status("Digite o código de 6 caracteres.","bad");return}
- myName=($("joinName").value.trim()||"Convidado").slice(0,18);isHost=false;showGame();gameStatus("Conectando à sala "+room+"...");peer=new Peer(undefined,{debug:2});setupPeerEvents();
- peer.on("open",()=>{attachConnection(peer.connect("ppt-"+room.toLowerCase(),{reliable:true}))});
-});
-$("copyBtn").addEventListener("click",async()=>{
- const invite="Entre no meu jogo de Pedra, Papel e Tesoura! Código da sala: "+room;
- try{await navigator.clipboard.writeText(invite);$("copyBtn").textContent="Convite copiado!"}catch(e){window.prompt("Copie e envie este convite:",invite)}
- setTimeout(()=>$("copyBtn").textContent="Copiar convite",1800);
-});
-$("rematchBtn").addEventListener("click",()=>{
- if(!connected||!roundReady)return;
- round++;send({type:"next",round});resetRound();gameStatus("Nova rodada. Escolha sua jogada.","good");
-});
-$("leaveBtn").addEventListener("click",()=>{
- if(conn){conn.close();conn=null}if(peer){peer.destroy();peer=null}connected=false;room="";myMove=null;theirMove=null;round=0;score={me:0,draw:0,them:0};updateScore();$("gamePanel").classList.add("hidden");$("lobbyPanel").classList.remove("hidden");status("Você saiu da sala. Crie ou entre em outra partida.");setChoices(false);
-});
-})();
-</script>
-</body></html>
+<footer>CLICKLOGOS · PROJETOS DIGITAIS · JOGOS PARA NAVEGADOR</footer>
+</main></body></html>
